@@ -26,7 +26,7 @@ def favicon():
     return 'OK'
 
 
-@app.route("/api/<url>")
+@app.route("/<url>")
 def parse_url(url):
     url = url_handler.get_full_url(url)
     if url is None:
