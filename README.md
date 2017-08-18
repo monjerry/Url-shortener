@@ -3,11 +3,14 @@
 Commands to get it going
 
 * Inside api folder
-pip install -r requirements.txt
-python app.py
+
+```pip install -r requirements.txt```
+
+```python app.py```
 
 * Inside ui folder
 
-npm install .
-npm start
+```npm install .```
+
+```npm start```
 
