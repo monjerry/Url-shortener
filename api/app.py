@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, abort, request, jsonify, redirect
 import url_handler
 from flask_cors import CORS, cross_origin
 
@@ -16,8 +16,16 @@ def list_urls():
     urls = url_handler.get_all_urls()
     return jsonify(urls) 
 
+@app.route("/favicon.ico")
+def favicon():
+    return 'OK'
+
+
 @app.route("/<url>")
 def parse_url(url):
-    return jsonify({'full_url': url_handler.get_full_url(url)})
+    url = url_handler.get_full_url(url)
+    if url is None:
+        abort(404)
+    return redirect('http://' + url)
 
 app.run()

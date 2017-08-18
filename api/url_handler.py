@@ -27,12 +27,14 @@ def get_all_urls():
 def get_hash(number):
     possible_letters = len(alphabet)
     string  = ''
-    number += possible_letters
+    # number += possible_letters**3
     while number >= 1:
-        string += alphabet[int(number % possible_letters)]
-        number -= possible_letters
+        number, rest = divmod(number, possible_letters)
+        string += alphabet[rest]
     return string
 
 def get_full_url(id_url):
     url = session.query(Url).filter(Url.short_url==id_url).first()
+    if url is None:
+        return None
     return url.full_url

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import './bootstrap.min.css';
 
@@ -67,7 +66,7 @@ class Urls extends Component {
 	      <th>Minified url</th>
 	    </tr>
 	  </thead>
-	  <tbody> {
+	  <tbody>{
 	    rows
 	  }
 	  </tbody>
@@ -78,14 +77,7 @@ class Urls extends Component {
 }
 const UrlRow = (props) => {
   return (
-    <tr>
-      <td>
-      {props.data.full_url}
-      </td>
-      <td>
-      {props.data.short_url}
-      </td>
-    </tr>
+    <tr><td>{props.data.full_url}</td><td>{props.data.short_url}</td></tr>
   );
 }
 class App extends Component {
