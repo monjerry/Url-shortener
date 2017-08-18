@@ -21,7 +21,7 @@ def get_all_urls():
     except e:
         raise e
     finally:
-        urls = [{'short_url': url.short_url, 'full_url': url.full_url} for url in res]
+        urls = [{'id': url.id, 'short_url': url.short_url, 'full_url': url.full_url} for url in res]
         return {'urls': urls}
 
 def get_hash(number):
