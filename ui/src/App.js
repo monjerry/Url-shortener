@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import './bootstrap.min.css';
 
+// Header class, currently not being used
 class Header extends Component {
   render() {
     return (
@@ -31,7 +32,7 @@ class Header extends Component {
 class AddUrl extends Component {
   render() {
     return (
-	<div className="main-body">
+	<div className="main-body" id="add-urls">
 	<form onSubmit={(e) => this.props.onSubmit(e)}>
 	  <div className="form-group row">
 	  <label className="col-2 col-form-label">URL</label>
@@ -39,7 +40,7 @@ class AddUrl extends Component {
 	        <input className="form-control" type="text" id="url" />
 	    </div>
 	  </div>
-	<button type="submit" className="btn btn-primary">Add Url</button>
+	<button type="submit" className="btn btn-primary">Minify Url</button>
 	</form>
 	</div>
       );
@@ -58,6 +59,7 @@ class Urls extends Component {
       />
     })
     return (
+	<div id="table-urls" className="main-body">
 	<table className="table">
 	  <thead className="thead-inverse">
 	    <tr>
@@ -65,10 +67,12 @@ class Urls extends Component {
 	      <th>Minified url</th>
 	    </tr>
 	  </thead>
-	  <tbody>
-
+	  <tbody> {
+	    rows
+	  }
 	  </tbody>
 	</table>
+	</div>
       );
   }
 }
@@ -76,10 +80,10 @@ const UrlRow = (props) => {
   return (
     <tr>
       <td>
-        { props.data.full_url }
+      {props.data.full_url}
       </td>
       <td>
-        { props.data.short_url }
+      {props.data.short_url}
       </td>
     </tr>
   );
@@ -91,6 +95,21 @@ class App extends Component {
       urls: []
     }
   }
+  componentDidMount() {
+      fetch('http://localhost:5000/list_urls', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then(response => response.json())
+    .then(json => {
+          this.setState({
+            urls: json.urls,
+         });
+    });
+
+  }
   addUrl(e) {
       e.preventDefault();
       fetch('http://localhost:5000/convert_url', {
@@ -100,19 +119,16 @@ class App extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({'url': e.target.url.value}),
-    }).then(response => response.json())
-    .then(json => {
-          this.setState({
-            data: json.items,
-         });
+      }).then(response => response.json())
+      .then(json => {
+	this.setState({urls: this.state.urls.concat([{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}])})
     });
   }
   render() {
     return (
 	<div>
-	  <Header />
-	  <AddUrl onSubmit={(e) => this.addUrl(e)}/>
-	  <Urls data={this.state.urls}/>    
+	  <AddUrl urls={this.state.urls} onSubmit={(e) => this.addUrl(e)}/>
+	  <Urls data={this.state.urls}/>
 	</div>
       );
   }

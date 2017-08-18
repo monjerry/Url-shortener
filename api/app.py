@@ -9,7 +9,7 @@ CORS(app)
 def convert_url():
     body = request.json
     res = url_handler.save_url(body['url'])
-    return jsonify({'minified_url': res.short_url})
+    return jsonify({'id': res.id, 'full_url': res.full_url, 'short_url': res.short_url})
 
 @app.route("/list_urls")
 def list_urls():
