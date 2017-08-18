@@ -8,7 +8,12 @@ app = Flask(__name__)
 @app.route("/api/convert_url", methods=["POST"])
 def convert_url():
     body = request.json
-    res = url_handler.save_url(body['url'])
+    customurl = ''
+    if 'customurl' in body:
+        customurl = body['customurl']
+    res = url_handler.save_url(body['url'], customurl)
+    if isinstance(res,dict):
+        return jsonify(res)
     return jsonify({'id': res.id, 'full_url': res.full_url, 'short_url': res.short_url})
 
 @app.route("/api/list_urls")

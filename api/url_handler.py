@@ -2,7 +2,22 @@ from db import Url, session
 
 alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-def save_url(full_url):
+def save_url(full_url, customurl):
+    to_save = None
+    if customurl != '':
+        try:
+            url = session.query(Url).filter(Url.short_url==customurl).first()
+            if url is not None:
+                return {'error': 'Short url already exists'}
+            to_save = Url(full_url=full_url, short_url=customurl)
+            session.add(to_save)
+            session.commit()
+        except e:
+            raise {'error': 'Short url already exists'}
+        finally:
+            if to_save is not None:
+                return to_save
+
     to_save = Url(full_url=full_url)
     try:
         session.add(to_save)

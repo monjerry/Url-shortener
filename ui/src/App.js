@@ -42,6 +42,7 @@ class AddUrl extends Component {
     if (!invalidUrl.isUri(e.target.value) && e.target.value != '') {
       this.setState({
 	invalidUrl: true,
+	isCustom: false,
       });
 
       return
@@ -53,6 +54,16 @@ class AddUrl extends Component {
 
     }
 
+  }
+
+  handleCheckboxChange(e) {
+    const target = e.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      isCustom: value
+    });
   }
 
   render() {
@@ -72,6 +83,27 @@ class AddUrl extends Component {
 		{this.state.invalidUrl && <div className="form-control-feedback">Please enter a valid Uri</div>}
 	    </div>
 	  </div>
+	  <div className="form-group row">
+	   <label className="col-2 col-form-label">
+          Custom:
+          <input
+            name="isCustom"
+            type="checkbox"
+	    id="isCustom"
+            checked={this.state.isCustom}
+            onChange={this.handleCheckboxChange.bind(this)}
+            />
+        </label>
+	  </div>
+	{this.state.isCustom &&
+	<div className="form-group row">
+	  <label className="col-2 col-form-label">Custom URI</label>
+	    <div className={this.state.invalidUrl ? "col-10 has-danger": "col-10"}>
+	        <input className="form-control" type="text" id="customurl"/>
+	    </div>
+	</div>
+	}
+
 	<button disabled={this.state.invalidUrl} type="submit" className="btn btn-primary">Minify Url</button>
 	</form>
 	</div>
@@ -140,16 +172,26 @@ class App extends Component {
 
   addUrl(e) {
       e.preventDefault();
+      var customurl = '';
+      if (typeof e.target.customurl !== "undefined") {
+	customurl = e.target.customurl.value
+      }
       fetch('api/convert_url', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({'url': e.target.url.value}),
+	body: JSON.stringify({'url': e.target.url.value, 'customurl': customurl}),
       }).then(response => response.json())
       .then(json => {
-	this.setState({showNoty: true, urls: [{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}].concat(this.state.urls)})
+	if (typeof json.error !== "undefined") {
+	  alert(json.error)
+	}
+	else {
+
+	  this.setState({showNoty: true, urls: [{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}].concat(this.state.urls)})
+	}
     });
   }
   render() {
