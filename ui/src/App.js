@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import './bootstrap.min.css';
 
+var invalidUrl = require('valid-url');
+
 // Header class, currently not being used
 class Header extends Component {
   render() {
@@ -29,17 +31,43 @@ class Header extends Component {
 }
 
 class AddUrl extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      uriValid: true,
+    }
+  }
+
+  validateUri(e) {
+    if (!invalidUrl.isUri(e.target.value) && e.target.value != '') {
+      this.setState({
+	invalidUrl: true,
+      });
+
+      return
+    }
+    else {
+      this.setState({
+	invalidUrl: false,
+      });
+
+    }
+
+  }
+
   render() {
     return (
-	<div className="main-body" id="add-urls">
+	<div className={this.state.invalidUrl ? "main-body has-danger": "main-body"} id="add-urls">
 	<form onSubmit={(e) => this.props.onSubmit(e)}>
 	  <div className="form-group row">
 	  <label className="col-2 col-form-label">URL</label>
 	    <div className="col-10">
-	        <input className="form-control" type="text" id="url" />
+	        <input className={this.state.invalidUrl ? "form-control form-control-danger": "form-control"} type="text" id="url" onChange={this.validateUri.bind(this)}/>
+		{this.state.invalidUrl && <div className="form-control-feedback">Please enter a valid Uri</div>}
 	    </div>
 	  </div>
-	<button type="submit" className="btn btn-primary">Minify Url</button>
+	<button disabled={this.state.invalidUrl} type="submit" className="btn btn-primary">Minify Url</button>
 	</form>
 	</div>
       );
@@ -84,7 +112,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      urls: []
+      urls: [],
     }
   }
   componentDidMount() {
@@ -102,6 +130,7 @@ class App extends Component {
     });
 
   }
+
   addUrl(e) {
       e.preventDefault();
       fetch('http://localhost:5000/convert_url', {
@@ -113,13 +142,13 @@ class App extends Component {
       body: JSON.stringify({'url': e.target.url.value}),
       }).then(response => response.json())
       .then(json => {
-	this.setState({urls: this.state.urls.concat([{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}])})
+	this.setState({urls: [{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}].concat(this.state.urls)})
     });
   }
   render() {
     return (
 	<div>
-	  <AddUrl urls={this.state.urls} onSubmit={(e) => this.addUrl(e)}/>
+	  <AddUrl urls={this.state.urls} onSubmit={(e) => this.addUrl(e)} />
 	  <Urls data={this.state.urls}/>
 	</div>
       );
