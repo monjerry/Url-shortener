@@ -34,9 +34,9 @@ class AddUrl extends Component {
 	<div className="main-body">
 	<form onSubmit={(e) => this.props.onSubmit(e)}>
 	  <div className="form-group row">
-	  <label for="url-input" className="col-2 col-form-label">URL</label>
+	  <label className="col-2 col-form-label">URL</label>
 	    <div className="col-10">
-	        <input className="form-control" name="url" type="url" id="url"/>
+	        <input className="form-control" type="text" id="url" />
 	    </div>
 	  </div>
 	<button type="submit" className="btn btn-primary">Add Url</button>
@@ -58,10 +58,12 @@ class Urls extends Component {
       />
     })
     return (
-	<table>
-	  <thead>
-	    <th>Full url</th>
-	    <th>Minified url</th>
+	<table className="table">
+	  <thead className="thead-inverse">
+	    <tr>
+	      <th>Full url</th>
+	      <th>Minified url</th>
+	    </tr>
 	  </thead>
 	  <tbody>
 
@@ -95,6 +97,7 @@ class App extends Component {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({'url': e.target.url.value}),
     }).then(response => response.json())
