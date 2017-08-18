@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import './bootstrap.min.css';
-
 var invalidUrl = require('valid-url');
 
 // Header class, currently not being used
@@ -58,11 +57,17 @@ class AddUrl extends Component {
 
   render() {
     return (
-	<div className={this.state.invalidUrl ? "main-body has-danger": "main-body"} id="add-urls">
+	<div className="main-body" id="add-urls">
+	{this.props.showNoty && <div className="alert alert-success fade show" role="alert">
+	  <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+	    <span aria-hidden="true">&times;</span>
+	  </button>
+	  <strong>Added succesfuly</strong>
+	</div>}
 	<form onSubmit={(e) => this.props.onSubmit(e)}>
 	  <div className="form-group row">
 	  <label className="col-2 col-form-label">URL</label>
-	    <div className="col-10">
+	    <div className={this.state.invalidUrl ? "col-10 has-danger": "col-10"}>
 	        <input className={this.state.invalidUrl ? "form-control form-control-danger": "form-control"} type="text" id="url" onChange={this.validateUri.bind(this)}/>
 		{this.state.invalidUrl && <div className="form-control-feedback">Please enter a valid Uri</div>}
 	    </div>
@@ -92,6 +97,7 @@ class Urls extends Component {
 	    <tr>
 	      <th>Full url</th>
 	      <th>Minified url</th>
+	      <th>Go to</th>
 	    </tr>
 	  </thead>
 	  <tbody>{
@@ -105,7 +111,7 @@ class Urls extends Component {
 }
 const UrlRow = (props) => {
   return (
-    <tr><td>{props.data.full_url}</td><td>{props.data.short_url}</td></tr>
+    <tr><td>{props.data.full_url}</td><td>{props.data.short_url}</td><td><a className="btn btn-primary" href={props.data.full_url} role="button">Link</a></td></tr>
   );
 }
 class App extends Component {
@@ -113,10 +119,11 @@ class App extends Component {
     super();
     this.state = {
       urls: [],
+      noty: false,
     }
   }
   componentDidMount() {
-      fetch('http://localhost:5000/list_urls', {
+      fetch('api/list_urls', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -133,7 +140,7 @@ class App extends Component {
 
   addUrl(e) {
       e.preventDefault();
-      fetch('http://localhost:5000/convert_url', {
+      fetch('api/convert_url', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -142,13 +149,13 @@ class App extends Component {
       body: JSON.stringify({'url': e.target.url.value}),
       }).then(response => response.json())
       .then(json => {
-	this.setState({urls: [{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}].concat(this.state.urls)})
+	this.setState({showNoty: true, urls: [{'id': json.id, 'full_url': json.full_url, 'short_url': json.short_url}].concat(this.state.urls)})
     });
   }
   render() {
     return (
 	<div>
-	  <AddUrl urls={this.state.urls} onSubmit={(e) => this.addUrl(e)} />
+	  <AddUrl showNoty={this.state.showNoty} urls={this.state.urls} onSubmit={(e) => this.addUrl(e)} />
 	  <Urls data={this.state.urls}/>
 	</div>
       );

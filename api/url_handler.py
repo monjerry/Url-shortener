@@ -22,7 +22,7 @@ def get_all_urls():
         raise e
     finally:
         urls = [{'id': url.id, 'short_url': url.short_url, 'full_url': url.full_url} for url in res]
-        return {'urls': urls}
+        return {'urls': urls[::-1]}
 
 def get_hash(number):
     possible_letters = len(alphabet)
