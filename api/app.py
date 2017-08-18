@@ -5,10 +5,8 @@ app = Flask(__name__)
 @app.route("/convert_url", methods=["POST"])
 def convert_url():
     body = request.json
-    res = url_handler.save_url(body['url'], 'mini')
-    if res is True:
-        return jsonify({'new_url': 'mini'})
-
+    res = url_handler.save_url(body['url'])
+    return jsonify({'minified_url': res.short_url})
 
 @app.route("/list_urls")
 def list_urls():
@@ -17,6 +15,6 @@ def list_urls():
 
 @app.route("/<url>")
 def parse_url(url):
-    return "Hello World!"
+    return jsonify({'full_url': url_handler.get_full_url(url)})
 
 app.run()
